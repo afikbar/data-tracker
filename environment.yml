@@ -1,0 +1,6 @@
+name: data-tracker
+dependencies:
+  - python~=3.9
+  - pip
+  - pip:
+    - -r file:requirements.txt

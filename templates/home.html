@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Tracker</title>
+</head>
+<body>
+Welcome to Data Tracker!
+<br>
+<form action="{{ url_for('get_url_for_data') }}" method="post">
+    <div>
+        <label for="market">Market (Exchange):</label>
+        <select id="market" name="market">
+            {% for market in markets %}
+                <option value="{{ market }}" SELECTED>{{ market }}</option>"
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="pair">Pair:</label>
+        <select id="pair" name="pair">
+            {% for pair in pairs %}
+                <option value="{{ pair }}" SELECTED>{{ pair }}</option>"
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit">Go</button>
+</form>
+
+</body>
+</html>

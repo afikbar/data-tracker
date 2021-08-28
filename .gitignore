@@ -122,3 +122,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.idea/
+
+data_tracker/data/24h_store/
+
+static/plots/
