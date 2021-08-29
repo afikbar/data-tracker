@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import Tuple
 
 import pandas as pd
 import requests
@@ -63,18 +63,36 @@ class DataTracker:
 
         now_df.to_parquet(self.dump_path / f"{minutes_of_day}.parquet", index=False)
 
-    def view_data(self, market: str, pair: str):
+    def _calc_data(self, market: str, pair: str) -> Tuple[pd.DataFrame, float]:
         dump_df = pd.read_parquet(self.dump_path)
         market_df = dump_df.loc[(dump_df.market == market.lower())]
         pair_df = market_df.loc[market_df.pair == pair.lower(), ['timestamp', 'price']]
 
         if pair_df.empty:
-            return f"No data available for {market.upper()}:{pair.upper()}."
+            raise ValueError("No data available for {market.upper()}:{pair.upper()}.")
 
         var_df = market_df.groupby('pair').agg({'price': 'var'})
         ranks = var_df.price.rank(pct=True, method='first', ascending=False)
 
         pair_rank = round(ranks[pair.lower()], 3)
+
+        return pair_df, pair_rank
+
+    def get_data(self, market: str, pair: str) -> dict:
+        pair_df, pair_rank = self._calc_data(market, pair)
+
+        pair_df['timestamp'] = (pair_df.timestamp.astype('int64') // 1e9).astype(int)
+        values_dict = pair_df.set_index('timestamp')['price'].to_dict()
+        result = {
+            'result': {
+                'rank': pair_rank,
+                'values': values_dict
+            }
+        }
+        return result
+
+    def plot_data(self, market: str, pair: str) -> str:
+        pair_df, pair_rank = self._calc_data(market, pair)
 
         path = self.plots_path / market
         path.mkdir(exist_ok=True)
@@ -86,4 +104,4 @@ class DataTracker:
         fig = ax.get_figure()
         img_path = path / f"{pair.lower()}.png"
         fig.savefig(img_path)
-        return f"<img src='/{img_path.as_posix()}'/>"
+        return img_path.as_posix()
