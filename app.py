@@ -28,17 +28,6 @@ def plot_data(pair: str, market: str = 'kraken'):
 @app.route('/data-tracker/<pair>')
 @app.route('/data-tracker/<market>/<pair>')
 def get_data(pair: str, market: str = 'kraken'):
-    {
-        "result": {"rank": 0.039,
-                   "values":
-                       {"1630168020": 48801.3,
-                        "1630168080": 48801.3,
-                        "1630168140": 48740.2,
-                        "1630168200": 48740.2,
-                        "1630223760": 48247.2
-                        }
-                   }
-    }
     return tracker.get_data(market, pair)
 
 
